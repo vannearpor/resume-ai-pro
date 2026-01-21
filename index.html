@@ -1,354 +1,425 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Resume AI Pro - AI Resume & Cover Letter Optimization</title>
-  <meta name="description" content="AI-powered resume and cover letter optimization for technology jobs. Optimize keyword alignment, ATS compatibility, and clarity.">
-  
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- React & ReactDOM -->
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  
-  <!-- Babel for JSX transformation -->
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  
-  <!-- Lucide React Icons -->
-  <script src="https://unpkg.com/lucide-react@0.263.1/dist/umd/lucide-react.min.js"></script>
-  
-  <!-- Mammoth.js for DOCX parsing -->
-  <script src="https://unpkg.com/mammoth@1.6.0/mammoth.browser.min.js"></script>
-  
-  <style>
-    /* Custom scrollbar */
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #f1f5f9;
-      border-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #94a3b8;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume AI Pro - AI Resume & Cover Letter Optimization</title>
+    <meta name="description" content="AI-powered resume and cover letter optimization. Get ATS-compatible formatting, keyword alignment, and professional rewriting for technology jobs.">
+    <meta name="keywords" content="resume, cover letter, AI, optimization, ATS, job application, career">
+    <meta name="author" content="Resume AI Pro">
     
-    /* Smooth animations */
-    * {
-      scroll-behavior: smooth;
-    }
+    <!-- Open Graph / Social Media -->
+    <meta property="og:title" content="Resume AI Pro - AI Resume & Cover Letter Optimization">
+    <meta property="og:description" content="Get professionally optimized resumes and cover letters with AI-powered analysis and ATS-compatible formatting.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://resumeaipro.io">
     
-    /* Loading spinner animation */
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    .animate-spin {
-      animation: spin 1s linear infinite;
-    }
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>">
     
-    /* Pulse animation */
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
-    .animate-pulse {
-      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-    }
-  </style>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    
+    <!-- Mammoth.js for DOCX parsing -->
+    <script src="https://unpkg.com/mammoth@1.6.0/mammoth.browser.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
-  <div id="root"></div>
-  
-  <script type="text/babel">
-    // Version 26.0 - Standalone HTML version without Stripe paywall
+    <div id="root"></div>
     
-    // ============================================================
-    // ⚠️  API KEY CONFIGURATION - REPLACE WITH YOUR ACTUAL KEY  ⚠️
-    // ============================================================
-    // Get your API key from: https://console.anthropic.com/
-    // Replace 'your--here' with your actual Anthropic API key
-    const ANTHROPIC_API_KEY = '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';
-    // ============================================================
-    
-    const { useState, useRef } = React;
-    const { Upload, FileText, Briefcase, Sparkles, Download, AlertCircle, X, File, MessageSquare, Copy, Check } = lucideReact;
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+        
+        // =============================================================================
+        // CONFIGURATION
+        // =============================================================================
+        const BACKEND_API_URL = 'https://resume-ai-backend-sigma-wheat.vercel.app/api';
+        // =============================================================================
+        
+        // Lucide Icons
+        const Upload = (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>;
+        const FileText = (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><line x1="10" x2="8" y1="9" y2="9"/></svg>;
+        const Briefcase = (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>;
+        const Sparkles = (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>;
+        const Download = (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>;
+        const AlertCircle = (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>;
+        const X = (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>;
+        const File = (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>;
+        const MessageSquare = (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>;
+        const Copy = (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>;
+        const Check = (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polyline points="20 6 9 17 4 12"/></svg>;
+        const CreditCard = (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>;
 
-    function ResumeReviewApp() {
-      const [resume, setResume] = useState('');
-      const [coverLetter, setCoverLetter] = useState('');
-      const [jobDescription, setJobDescription] = useState('');
-      const [additionalInstructions, setAdditionalInstructions] = useState('');
-      const [result, setResult] = useState(null);
-      const [loading, setLoading] = useState(false);
-      const [error, setError] = useState('');
-      const [resumeFileName, setResumeFileName] = useState('');
-      const [coverLetterFileName, setCoverLetterFileName] = useState('');
-      const [loadingProgress, setLoadingProgress] = useState(0);
-      const [loadingStage, setLoadingStage] = useState('');
-      const [activeTab, setActiveTab] = useState('resume');
-      const [analyzedResume, setAnalyzedResume] = useState(false);
-      const [analyzedCoverLetter, setAnalyzedCoverLetter] = useState(false);
-      const [copySuccess, setCopySuccess] = useState('');
-      const resultsRef = useRef(null);
-
-      const parseResults = (text, hasResume, hasCoverLetter) => {
-        const sections = { resumeAnalysis: '', resumeRecommendations: '', resumeUpdated: '', coverLetterAnalysis: '', coverLetterRecommendations: '', coverLetterUpdated: '' };
-        
-        if (hasResume && !hasCoverLetter) {
-          const resumeSections = extractSectionsFromContent(text, 'Resume');
-          sections.resumeAnalysis = resumeSections.analysis;
-          sections.resumeRecommendations = resumeSections.recommendations;
-          sections.resumeUpdated = resumeSections.updated;
-          return sections;
-        }
-        
-        if (hasCoverLetter && !hasResume) {
-          const coverLetterSections = extractSectionsFromContent(text, 'Cover Letter');
-          sections.coverLetterAnalysis = coverLetterSections.analysis;
-          sections.coverLetterRecommendations = coverLetterSections.recommendations;
-          sections.coverLetterUpdated = coverLetterSections.updated;
-          return sections;
-        }
-        
-        let resumeText = '';
-        let coverLetterText = '';
-        
-        const splitPatterns = [
-          /\n#{1,3}\s*COVER\s*LETTER[^\n]*/i,
-          /\nCOVER\s*LETTER\s*(?:ANALYSIS|REVIEW|OUTPUT|SECTION)/i,
-          /\n\*\*COVER\s*LETTER[^\n]*/i,
-          /\n---+\s*\n\s*(?:#{1,3}\s*)?COVER\s*LETTER/i,
-          /\nOutput\s*(?:for\s*)?Cover\s*Letter/i
-        ];
-        
-        let splitFound = false;
-        for (const pattern of splitPatterns) {
-          if (pattern.test(text)) {
-            const parts = text.split(pattern);
-            resumeText = parts[0];
-            coverLetterText = parts.slice(1).join('');
-            splitFound = true;
-            break;
-          }
-        }
-        
-        if (!splitFound) {
-          resumeText = text;
-        }
-        
-        if (resumeText) {
-          const resumeSections = extractSectionsFromContent(resumeText, 'Resume');
-          sections.resumeAnalysis = resumeSections.analysis;
-          sections.resumeRecommendations = resumeSections.recommendations;
-          sections.resumeUpdated = resumeSections.updated;
-        }
-        
-        if (coverLetterText) {
-          const coverLetterSections = extractSectionsFromContent(coverLetterText, 'Cover Letter');
-          sections.coverLetterAnalysis = coverLetterSections.analysis;
-          sections.coverLetterRecommendations = coverLetterSections.recommendations;
-          sections.coverLetterUpdated = coverLetterSections.updated;
-        }
-        
-        return sections;
-      };
-      
-      const extractSectionsFromContent = (content, docType) => {
-        let analysis = '';
-        let recommendations = '';
-        let updated = '';
-        
-        const analysisPatterns = [
-          /#{1,3}\s*1[.\s:)]*\s*Analysis[^\n]*\n([\s\S]*?)(?=\n#{1,3}\s*2[.\s:)]*\s*(?:Specific\s*)?Recommend)/i,
-          /#{1,3}\s*1[.\s:)]*[^\n]*(?:Strength|Analysis|Improvement)[^\n]*\n([\s\S]*?)(?=\n#{1,3}\s*2[.\s:)]*)/i,
-          /#{1,3}\s*(?:Analysis|Strengths)[^\n]*\n([\s\S]*?)(?=\n#{1,3}\s*(?:Specific\s*)?Recommend)/i,
-        ];
-        
-        const recommendationsPatterns = [
-          /#{1,3}\s*2[.\s:)]*\s*(?:Specific\s*)?Recommend[^\n]*\n([\s\S]*?)(?=\n#{1,3}\s*3[.\s:)]*\s*(?:Updated|Revised))/i,
-          /#{1,3}\s*2[.\s:)]*[^\n]*\n([\s\S]*?)(?=\n#{1,3}\s*3[.\s:)]*)/i,
-          /#{1,3}\s*(?:Specific\s*)?Recommend[^\n]*\n([\s\S]*?)(?=\n#{1,3}\s*(?:Updated|Revised))/i,
-        ];
-        
-        const updatedPatterns = [
-          /#{1,3}\s*3[.\s:)]*\s*(?:Updated|Revised)\s*(?:Resume|Cover\s*Letter)?[^\n]*\n([\s\S]*?)$/i,
-          /#{1,3}\s*3[.\s:)]*[^\n]*\n([\s\S]*?)$/i,
-          /#{1,3}\s*(?:Updated|Revised)\s*(?:Resume|Cover\s*Letter)[^\n]*\n([\s\S]*?)$/i,
-        ];
-        
-        for (const pattern of analysisPatterns) {
-          const match = content.match(pattern);
-          if (match && match[1]?.trim()) {
-            analysis = match[1].trim();
-            break;
-          }
-        }
-        
-        for (const pattern of recommendationsPatterns) {
-          const match = content.match(pattern);
-          if (match && match[1]?.trim()) {
-            recommendations = match[1].trim();
-            break;
-          }
-        }
-        
-        for (const pattern of updatedPatterns) {
-          const match = content.match(pattern);
-          if (match && match[1]?.trim()) {
-            updated = match[1].trim();
-            break;
-          }
-        }
-        
-        if (!analysis || !recommendations || !updated) {
-          const section1Match = content.match(/#{1,3}\s*1[.\s:)]/i);
-          const section2Match = content.match(/#{1,3}\s*2[.\s:)]/i);
-          const section3Match = content.match(/#{1,3}\s*3[.\s:)]/i);
-          
-          if (section1Match && section2Match && section3Match) {
-            const s1Index = content.indexOf(section1Match[0]);
-            const s2Index = content.indexOf(section2Match[0]);
-            const s3Index = content.indexOf(section3Match[0]);
+        function ResumeReviewApp() {
+            const [resume, setResume] = useState('');
+            const [coverLetter, setCoverLetter] = useState('');
+            const [jobDescription, setJobDescription] = useState('');
+            const [additionalInstructions, setAdditionalInstructions] = useState('');
+            const [result, setResult] = useState(null);
+            const [loading, setLoading] = useState(false);
+            const [error, setError] = useState('');
+            const [resumeFileName, setResumeFileName] = useState('');
+            const [coverLetterFileName, setCoverLetterFileName] = useState('');
+            const [loadingProgress, setLoadingProgress] = useState(0);
+            const [loadingStage, setLoadingStage] = useState('');
+            const [activeTab, setActiveTab] = useState('resume');
+            const [analyzedResume, setAnalyzedResume] = useState(false);
+            const [analyzedCoverLetter, setAnalyzedCoverLetter] = useState(false);
+            const resultsRef = useRef(null);
             
-            if (s1Index < s2Index && s2Index < s3Index) {
-              const s1Content = content.substring(s1Index, s2Index);
-              const s2Content = content.substring(s2Index, s3Index);
-              const s3Content = content.substring(s3Index);
-              
-              if (!analysis) analysis = s1Content.replace(/^[^\n]*\n/, '').trim();
-              if (!recommendations) recommendations = s2Content.replace(/^[^\n]*\n/, '').trim();
-              if (!updated) updated = s3Content.replace(/^[^\n]*\n/, '').trim();
-            }
-          }
-        }
-        
-        return { analysis, recommendations, updated };
-      };
+            // Payment state
+            const [showPaymentModal, setShowPaymentModal] = useState(false);
+            const [paymentProcessing, setPaymentProcessing] = useState(false);
+            const [pendingAnalysis, setPendingAnalysis] = useState(null);
 
-      const handleFileRead = async (file) => {
-        if (file.type === 'application/pdf') {
-          const ab = await file.arrayBuffer();
-          const u8 = new Uint8Array(ab);
-          let binary = '';
-          for (let i = 0; i < u8.length; i++) {
-            binary += String.fromCharCode(u8[i]);
-          }
-          const b64 = btoa(binary);
-          const res = await fetch('https://api.anthropic.com/v1/messages', {
-            method: 'POST',
-            headers: { 
-              'Content-Type': 'application/json',
-              'x-api-key': ANTHROPIC_API_KEY,
-              'anthropic-version': '2023-06-01',
-              'anthropic-dangerous-direct-browser-access': 'true'
-            },
-            body: JSON.stringify({
-              model: 'claude-sonnet-4-20250514',
-              max_tokens: 2000,
-              messages: [{ role: 'user', content: [{ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: b64 }}, { type: 'text', text: 'Extract all text from this PDF.' }]}]
-            })
-          });
-          const data = await res.json();
-          if (data.error) throw new Error('Failed to read PDF');
-          return data.content.filter(i => i.type === 'text').map(i => i.text).join('\n');
-        } else if (file.name.endsWith('.docx')) {
-          const ab = await file.arrayBuffer();
-          const r = await mammoth.extractRawText({ arrayBuffer: ab });
-          if (!r.value?.trim()) throw new Error('Failed to read DOCX');
-          return r.value;
-        } else if (file.name.endsWith('.doc')) {
-          const ab = await file.arrayBuffer();
-          const u8 = new Uint8Array(ab);
-          let binary = '';
-          for (let i = 0; i < u8.length; i++) {
-            binary += String.fromCharCode(u8[i]);
-          }
-          const b64 = btoa(binary);
-          const res = await fetch('https://api.anthropic.com/v1/messages', {
-            method: 'POST',
-            headers: { 
-              'Content-Type': 'application/json',
-              'x-api-key': ANTHROPIC_API_KEY,
-              'anthropic-version': '2023-06-01',
-              'anthropic-dangerous-direct-browser-access': 'true'
-            },
-            body: JSON.stringify({
-              model: 'claude-sonnet-4-20250514',
-              max_tokens: 2000,
-              messages: [{ role: 'user', content: [{ type: 'document', source: { type: 'base64', media_type: 'application/msword', data: b64 }}, { type: 'text', text: 'Extract all text.' }]}]
-            })
-          });
-          const data = await res.json();
-          if (data.error) throw new Error('Failed to read DOC');
-          return data.content.filter(i => i.type === 'text').map(i => i.text).join('\n');
-        }
-        return await file.text();
-      };
+            // Check for payment completion on component mount
+            useEffect(() => {
+                const urlParams = new URLSearchParams(window.location.search);
+                const sessionId = urlParams.get('session_id');
+                
+                if (sessionId) {
+                    verifyPaymentAndAnalyze(sessionId);
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
+            }, []);
 
-      const handleFile = async (file, type) => {
-        if (!file) return;
-        try {
-          const text = await handleFileRead(file);
-          if (type === 'resume') { setResume(text); setResumeFileName(file.name); }
-          else { setCoverLetter(text); setCoverLetterFileName(file.name); }
-          setError('');
-        } catch (e) {
-          setError(`Error: ${e.message}`);
-        }
-      };
+            // Verify payment with backend and proceed with analysis
+            const verifyPaymentAndAnalyze = async (sessionId) => {
+                setLoading(true);
+                setLoadingProgress(30);
+                setLoadingStage('Verifying payment...');
+                
+                try {
+                    const verifyResponse = await fetch(`${BACKEND_API_URL}/verify-payment`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ sessionId })
+                    });
+                    
+                    const verifyData = await verifyResponse.json();
+                    
+                    if (!verifyData.paid) {
+                        throw new Error('Payment verification failed. Please try again.');
+                    }
+                    
+                    const pendingData = sessionStorage.getItem('pendingAnalysis');
+                    if (!pendingData) {
+                        throw new Error('Analysis data not found. Please start over.');
+                    }
+                    
+                    const { resume: savedResume, coverLetter: savedCoverLetter, jobDescription: savedJobDescription, additionalInstructions: savedAdditionalInstructions, hasResumeForAnalysis, hasCoverLetterForAnalysis } = JSON.parse(pendingData);
+                    
+                    sessionStorage.removeItem('pendingAnalysis');
+                    
+                    await performAnalysis(savedResume, savedCoverLetter, savedJobDescription, savedAdditionalInstructions, hasResumeForAnalysis, hasCoverLetterForAnalysis);
+                    
+                } catch (e) {
+                    setError(`Error: ${e.message}`);
+                    setLoading(false);
+                    setLoadingProgress(0);
+                }
+            };
 
-      const analyze = async () => {
-        if (!resume && !coverLetter) { setError('Provide at least resume or cover letter'); return; }
-        setLoading(true);
-        setError('');
-        setResult(null);
-        setLoadingProgress(0);
-        setLoadingStage('Preparing documents...');
-        setActiveTab('resume');
-        
-        const hasResumeForAnalysis = !!resume;
-        const hasCoverLetterForAnalysis = !!coverLetter;
-        
-        try {
-          let progressInterval = setInterval(() => {
-            setLoadingProgress(prev => {
-              if (prev >= 30) {
-                clearInterval(progressInterval);
-                return prev;
-              }
-              return prev + 5;
-            });
-          }, 400);
+            // Create Stripe checkout session via backend
+            const initiatePayment = async () => {
+                setPaymentProcessing(true);
+                
+                try {
+                    const response = await fetch(`${BACKEND_API_URL}/create-checkout`, {
+                        method: 'POST',
+                        mode: 'cors',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            successUrl: window.location.href.split('?')[0],
+                            cancelUrl: window.location.href.split('?')[0]
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({}));
+                        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const data = await response.json();
+                    
+                    if (data.url) {
+                        sessionStorage.setItem('pendingAnalysis', JSON.stringify(pendingAnalysis));
+                        window.location.href = data.url;
+                    } else {
+                        throw new Error(data.error || 'Failed to create payment session');
+                    }
+                } catch (e) {
+                    console.error('Payment error:', e);
+                    setError(`Payment Error: ${e.message}`);
+                    setPaymentProcessing(false);
+                    setShowPaymentModal(false);
+                    setLoading(false);
+                }
+            };
 
-          setLoadingStage('Reading and analyzing documents...');
-          await new Promise(resolve => setTimeout(resolve, 800));
+            const parseResults = (text, hasResume, hasCoverLetter) => {
+                const sections = { resumeAnalysis: '', resumeRecommendations: '', resumeUpdated: '', coverLetterAnalysis: '', coverLetterRecommendations: '', coverLetterUpdated: '' };
+                
+                if (hasResume && !hasCoverLetter) {
+                    const resumeSections = extractSectionsFromContent(text, 'Resume');
+                    sections.resumeAnalysis = resumeSections.analysis;
+                    sections.resumeRecommendations = resumeSections.recommendations;
+                    sections.resumeUpdated = resumeSections.updated;
+                    return sections;
+                }
+                
+                if (hasCoverLetter && !hasResume) {
+                    const coverLetterSections = extractSectionsFromContent(text, 'Cover Letter');
+                    sections.coverLetterAnalysis = coverLetterSections.analysis;
+                    sections.coverLetterRecommendations = coverLetterSections.recommendations;
+                    sections.coverLetterUpdated = coverLetterSections.updated;
+                    return sections;
+                }
+                
+                let resumeText = '';
+                let coverLetterText = '';
+                
+                const splitPatterns = [
+                    /\n#{1,3}\s*COVER\s*LETTER[^\n]*/i,
+                    /\nCOVER\s*LETTER\s*(?:ANALYSIS|REVIEW|OUTPUT|SECTION)/i,
+                    /\n\*\*COVER\s*LETTER[^\n]*/i,
+                    /\n---+\s*\n\s*(?:#{1,3}\s*)?COVER\s*LETTER/i,
+                    /\nOutput\s*(?:for\s*)?Cover\s*Letter/i
+                ];
+                
+                let splitFound = false;
+                for (const pattern of splitPatterns) {
+                    if (pattern.test(text)) {
+                        const parts = text.split(pattern);
+                        resumeText = parts[0];
+                        coverLetterText = parts.slice(1).join('');
+                        splitFound = true;
+                        break;
+                    }
+                }
+                
+                if (!splitFound) {
+                    resumeText = text;
+                }
+                
+                if (resumeText) {
+                    const resumeSections = extractSectionsFromContent(resumeText, 'Resume');
+                    sections.resumeAnalysis = resumeSections.analysis;
+                    sections.resumeRecommendations = resumeSections.recommendations;
+                    sections.resumeUpdated = resumeSections.updated;
+                }
+                
+                if (coverLetterText) {
+                    const coverLetterSections = extractSectionsFromContent(coverLetterText, 'Cover Letter');
+                    sections.coverLetterAnalysis = coverLetterSections.analysis;
+                    sections.coverLetterRecommendations = coverLetterSections.recommendations;
+                    sections.coverLetterUpdated = coverLetterSections.updated;
+                }
+                
+                return sections;
+            };
+            
+            const extractSectionsFromContent = (content, docType) => {
+                let analysis = '';
+                let recommendations = '';
+                let updated = '';
+                
+                const analysisPatterns = [
+                    /#{1,3}\s*1[.\s:)]*\s*Analysis[^\n]*\n([\s\S]*?)(?=\n#{1,3}\s*2[.\s:)]*\s*(?:Specific\s*)?Recommend)/i,
+                    /#{1,3}\s*1[.\s:)]*[^\n]*(?:Strength|Analysis|Improvement)[^\n]*\n([\s\S]*?)(?=\n#{1,3}\s*2[.\s:)]*)/i,
+                    /#{1,3}\s*(?:Analysis|Strengths)[^\n]*\n([\s\S]*?)(?=\n#{1,3}\s*(?:Specific\s*)?Recommend)/i,
+                ];
+                
+                const recommendationsPatterns = [
+                    /#{1,3}\s*2[.\s:)]*\s*(?:Specific\s*)?Recommend[^\n]*\n([\s\S]*?)(?=\n#{1,3}\s*3[.\s:)]*\s*(?:Updated|Revised))/i,
+                    /#{1,3}\s*2[.\s:)]*[^\n]*\n([\s\S]*?)(?=\n#{1,3}\s*3[.\s:)]*)/i,
+                    /#{1,3}\s*(?:Specific\s*)?Recommend[^\n]*\n([\s\S]*?)(?=\n#{1,3}\s*(?:Updated|Revised))/i,
+                ];
+                
+                const updatedPatterns = [
+                    /#{1,3}\s*3[.\s:)]*\s*(?:Updated|Revised)\s*(?:Resume|Cover\s*Letter)?[^\n]*\n([\s\S]*?)$/i,
+                    /#{1,3}\s*3[.\s:)]*[^\n]*\n([\s\S]*?)$/i,
+                    /#{1,3}\s*(?:Updated|Revised)\s*(?:Resume|Cover\s*Letter)[^\n]*\n([\s\S]*?)$/i,
+                ];
+                
+                for (const pattern of analysisPatterns) {
+                    const match = content.match(pattern);
+                    if (match && match[1]?.trim()) {
+                        analysis = match[1].trim();
+                        break;
+                    }
+                }
+                
+                for (const pattern of recommendationsPatterns) {
+                    const match = content.match(pattern);
+                    if (match && match[1]?.trim()) {
+                        recommendations = match[1].trim();
+                        break;
+                    }
+                }
+                
+                for (const pattern of updatedPatterns) {
+                    const match = content.match(pattern);
+                    if (match && match[1]?.trim()) {
+                        updated = match[1].trim();
+                        break;
+                    }
+                }
+                
+                if (!analysis || !recommendations || !updated) {
+                    const section1Match = content.match(/#{1,3}\s*1[.\s:)]/i);
+                    const section2Match = content.match(/#{1,3}\s*2[.\s:)]/i);
+                    const section3Match = content.match(/#{1,3}\s*3[.\s:)]/i);
+                    
+                    if (section1Match && section2Match && section3Match) {
+                        const s1Index = content.indexOf(section1Match[0]);
+                        const s2Index = content.indexOf(section2Match[0]);
+                        const s3Index = content.indexOf(section3Match[0]);
+                        
+                        if (s1Index < s2Index && s2Index < s3Index) {
+                            const s1Content = content.substring(s1Index, s2Index);
+                            const s2Content = content.substring(s2Index, s3Index);
+                            const s3Content = content.substring(s3Index);
+                            
+                            if (!analysis) analysis = s1Content.replace(/^[^\n]*\n/, '').trim();
+                            if (!recommendations) recommendations = s2Content.replace(/^[^\n]*\n/, '').trim();
+                            if (!updated) updated = s3Content.replace(/^[^\n]*\n/, '').trim();
+                        }
+                    }
+                }
+                
+                return { analysis, recommendations, updated };
+            };
 
-          const prompt = `You are an expert career coach, resume writer, and cover letter writer known for making TRANSFORMATIVE improvements to documents.
+            const handleFileRead = async (file) => {
+                if (file.type === 'application/pdf') {
+                    const ab = await file.arrayBuffer();
+                    const u8 = new Uint8Array(ab);
+                    let b64 = '';
+                    for (let i = 0; i < u8.length; i++) {
+                        b64 += String.fromCharCode(u8[i]);
+                    }
+                    b64 = btoa(b64);
+                    const res = await fetch(`${BACKEND_API_URL}/extract-pdf`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ data: b64 })
+                    });
+                    const data = await res.json();
+                    if (data.error) throw new Error('Failed to read PDF');
+                    return data.text;
+                } else if (file.name.endsWith('.docx')) {
+                    const ab = await file.arrayBuffer();
+                    const r = await mammoth.extractRawText({ arrayBuffer: ab });
+                    if (!r.value?.trim()) throw new Error('Failed to read DOCX');
+                    return r.value;
+                } else if (file.name.endsWith('.doc')) {
+                    throw new Error('DOC format not supported. Please convert to DOCX or PDF.');
+                }
+                return await file.text();
+            };
+
+            const handleFile = async (file, type) => {
+                if (!file) return;
+                try {
+                    const text = await handleFileRead(file);
+                    if (type === 'resume') { setResume(text); setResumeFileName(file.name); }
+                    else { setCoverLetter(text); setCoverLetterFileName(file.name); }
+                    setError('');
+                } catch (e) {
+                    setError(`Error: ${e.message}`);
+                }
+            };
+
+            const analyze = async () => {
+                if (!resume && !coverLetter) { setError('Provide at least resume or cover letter'); return; }
+                setLoading(true);
+                setError('');
+                setResult(null);
+                setLoadingProgress(0);
+                setLoadingStage('Preparing documents...');
+                setActiveTab('resume');
+                
+                const hasResumeForAnalysis = !!resume;
+                const hasCoverLetterForAnalysis = !!coverLetter;
+                
+                setPendingAnalysis({
+                    resume,
+                    coverLetter,
+                    jobDescription,
+                    additionalInstructions,
+                    hasResumeForAnalysis,
+                    hasCoverLetterForAnalysis
+                });
+                
+                let currentProgress = 0;
+                const progressInterval = setInterval(() => {
+                    currentProgress += 5;
+                    setLoadingProgress(currentProgress);
+                    
+                    if (currentProgress >= 30) {
+                        clearInterval(progressInterval);
+                        setLoadingStage('Documents analyzed!');
+                        setShowPaymentModal(true);
+                    }
+                }, 400);
+
+                setLoadingStage('Reading and analyzing documents...');
+            };
+
+            const performAnalysis = async (analyzeResume, analyzeCoverLetter, analyzeJobDescription, analyzeAdditionalInstructions, hasResumeForAnalysis, hasCoverLetterForAnalysis) => {
+                try {
+                    setShowPaymentModal(false);
+                    setLoadingProgress(35);
+                    setLoadingStage('Payment verified! Analyzing documents...');
+
+                    const prompt = `You are an expert career coach, resume writer, and cover letter writer known for making TRANSFORMATIVE improvements to documents.
 
 Analyze the provided documents and generate outputs only for the document types supplied (resume and/or cover letter). The inputs may include:      
-• A resume      
-• A cover letter      
-• A job description      
-• Additional Instructions provided by the user
+- A resume      
+- A cover letter      
+- A job description      
+- Additional Instructions provided by the user
 
 Outputs (Required)  
 For each document type provided, produce exactly two outputs in the following order:
 
 Output 1: Analysis & Recommendations      
-• A bulleted list with detailed analysis of strengths and areas for improvement      
-• A bulleted list with specific, actionable recommendations ${jobDescription ? 'for tailoring to this job' : 'for improving the document'}      
-• Focus on clarity, structure, keyword alignment, ATS compatibility, and impact      
-• Explicitly call out where content is vague, overly wordy, repetitive, or lacking clarity      
-• Identify weak action verbs that should be replaced with stronger alternatives
-• Note any formatting, ordering, or structural improvements needed
-• Reference relevant feedback driven by the job description and/or additional instructions where applicable
+- A bulleted list with detailed analysis of strengths and areas for improvement      
+- A bulleted list with specific, actionable recommendations ${analyzeJobDescription ? 'for tailoring to this job' : 'for improving the document'}      
+- Focus on clarity, structure, keyword alignment, ATS compatibility, and impact      
+- Explicitly call out where content is vague, overly wordy, repetitive, or lacking clarity      
+- Identify weak action verbs that should be replaced with stronger alternatives
+- Note any formatting, ordering, or structural improvements needed
+- Reference relevant feedback driven by the job description and/or additional instructions where applicable
 
 Output 2: Updated Document (COMPREHENSIVE REWRITE)
 CRITICAL: The updated document must show VISIBLE, SUBSTANTIAL improvements. Users are paying for meaningful optimization, not minor tweaks.
@@ -356,46 +427,46 @@ CRITICAL: The updated document must show VISIBLE, SUBSTANTIAL improvements. User
 You MUST apply ALL of the following transformations:
 
 1. ACTION VERB TRANSFORMATION: Replace EVERY weak or passive verb with powerful, dynamic alternatives
-   • "Responsible for" → "Spearheaded", "Orchestrated", "Drove"
-   • "Helped" → "Enabled", "Facilitated", "Empowered"  
-   • "Worked on" → "Engineered", "Developed", "Executed"
-   • "Did" → "Delivered", "Achieved", "Accomplished"
-   • "Made" → "Created", "Built", "Designed"
-   • "Managed" → "Directed", "Led", "Oversaw"
+   - "Responsible for" -> "Spearheaded", "Orchestrated", "Drove"
+   - "Helped" -> "Enabled", "Facilitated", "Empowered"  
+   - "Worked on" -> "Engineered", "Developed", "Executed"
+   - "Did" -> "Delivered", "Achieved", "Accomplished"
+   - "Made" -> "Created", "Built", "Designed"
+   - "Managed" -> "Directed", "Led", "Oversaw"
 
 2. SENTENCE STRUCTURE OPTIMIZATION: Rewrite bullets for maximum impact
-   • Lead with the action verb
-   • Remove filler words and redundancies
-   • Combine related points for conciseness
-   • Break up overly long bullets into focused statements
+   - Lead with the action verb
+   - Remove filler words and redundancies
+   - Combine related points for conciseness
+   - Break up overly long bullets into focused statements
 
 3. PROFESSIONAL LANGUAGE UPGRADE: Elevate the vocabulary throughout
-   • Replace casual language with professional terminology
-   • Use industry-standard keywords naturally
-   • Ensure consistent tone and voice
+   - Replace casual language with professional terminology
+   - Use industry-standard keywords naturally
+   - Ensure consistent tone and voice
 
 4. FORMATTING & ORGANIZATION: Improve visual hierarchy and flow
-   • Reorder bullets to lead with strongest achievements
-   • Group related experiences logically
-   • Ensure parallel structure across all bullets
+   - Reorder bullets to lead with strongest achievements
+   - Group related experiences logically
+   - Ensure parallel structure across all bullets
 
 5. CLARITY & CONCISENESS: Tighten all writing
-   • Remove unnecessary words
-   • Eliminate redundant phrases
-   • Make every word count
+   - Remove unnecessary words
+   - Eliminate redundant phrases
+   - Make every word count
 
 6. ATS OPTIMIZATION: Enhance keyword density naturally
-   • Incorporate relevant keywords from job description (if provided)
-   • Use standard section headings
-   • Avoid graphics-dependent formatting descriptions
+   - Incorporate relevant keywords from job description (if provided)
+   - Use standard section headings
+   - Avoid graphics-dependent formatting descriptions
 
 The updated document should be NOTICEABLY different and improved from the original. A side-by-side comparison should clearly show the value of the optimization.
 
 Accuracy & Data Integrity Constraints      
-• You must NOT invent new facts, metrics, numbers, outcomes, tools, company names, or achievements
-• You must ONLY use information explicitly present in the provided documents
-• Do NOT add quantitative data unless it exists in the source
-• You CAN and SHOULD:
+- You must NOT invent new facts, metrics, numbers, outcomes, tools, company names, or achievements
+- You must ONLY use information explicitly present in the provided documents
+- Do NOT add quantitative data unless it exists in the source
+- You CAN and SHOULD:
   - Rephrase and restructure existing content dramatically
   - Replace weak verbs with strong action verbs
   - Reorder content for better impact
@@ -404,15 +475,15 @@ Accuracy & Data Integrity Constraints
   - Combine or split bullets for better readability
 
 Job Description Alignment (If Provided)      
-• Actively incorporate relevant terminology and keywords from the job description
-• Reorder and emphasize experiences that align with job requirements
-• Mirror the language and priorities of the posting where it accurately reflects existing experience
+- Actively incorporate relevant terminology and keywords from the job description
+- Reorder and emphasize experiences that align with job requirements
+- Mirror the language and priorities of the posting where it accurately reflects existing experience
 
 Additional Instructions Handling (If Provided)     
-• Treat the Additional Instructions as authoritative user guidance      
-• Apply tone, emphasis, formatting, or customization requests fully
+- Treat the Additional Instructions as authoritative user guidance      
+- Apply tone, emphasis, formatting, or customization requests fully
 
-${resume ? `RESUME:\n${resume}\n\n` : ''}${coverLetter ? `COVER LETTER:\n${coverLetter}\n\n` : ''}${jobDescription ? `JOB DESCRIPTION:\n${jobDescription}\n\n` : ''}${additionalInstructions ? `ADDITIONAL INSTRUCTIONS:\n${additionalInstructions}\n\n` : ''}FORMAT YOUR RESPONSE EXACTLY AS FOLLOWS for each document type:
+${analyzeResume ? `RESUME:\n${analyzeResume}\n\n` : ''}${analyzeCoverLetter ? `COVER LETTER:\n${analyzeCoverLetter}\n\n` : ''}${analyzeJobDescription ? `JOB DESCRIPTION:\n${analyzeJobDescription}\n\n` : ''}${analyzeAdditionalInstructions ? `ADDITIONAL INSTRUCTIONS:\n${analyzeAdditionalInstructions}\n\n` : ''}FORMAT YOUR RESPONSE EXACTLY AS FOLLOWS for each document type:
 
 # RESUME (if provided)
 
@@ -455,565 +526,626 @@ CRITICAL FORMATTING RULES:
 - Do NOT mix content between sections
 - Complete ALL sections fully before moving to the next document type`;
 
-          clearInterval(progressInterval);
-          setLoadingProgress(40);
-          setLoadingStage('Analyzing and optimizing content...');
+                    setLoadingProgress(40);
+                    setLoadingStage('Analyzing and optimizing content...');
 
-          let apiProgressInterval = setInterval(() => {
-            setLoadingProgress(prev => {
-              if (prev >= 85) return prev;
-              const increment = prev < 70 ? 2 : 1;
-              return prev + increment;
-            });
-          }, 3000);
+                    let apiProgressInterval = setInterval(() => {
+                        setLoadingProgress(prev => {
+                            if (prev >= 85) return prev;
+                            const increment = prev < 70 ? 2 : 1;
+                            return prev + increment;
+                        });
+                    }, 3000);
 
-          const res = await fetch('https://api.anthropic.com/v1/messages', {
-            method: 'POST',
-            headers: { 
-              'Content-Type': 'application/json',
-              'x-api-key': ANTHROPIC_API_KEY,
-              'anthropic-version': '2023-06-01',
-              'anthropic-dangerous-direct-browser-access': 'true'
-            },
-            body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 8000, messages: [{ role: 'user', content: prompt }]})
-          });
-          
-          clearInterval(apiProgressInterval);
-          setLoadingStage('Processing recommendations...');
-          setLoadingProgress(88);
-          
-          const data = await res.json();
-          if (data.error) throw new Error(data.error.message);
-          
-          setLoadingStage('Finalizing optimized versions...');
-          setLoadingProgress(95);
-          
-          await new Promise(r => setTimeout(r, 300));
-          setLoadingProgress(100);
-          setResult(data.content.filter(i => i.type === 'text').map(i => i.text).join('\n'));
-          
-          setAnalyzedResume(hasResumeForAnalysis);
-          setAnalyzedCoverLetter(hasCoverLetterForAnalysis);
-          
-          setTimeout(() => {
-            if (resultsRef.current) {
-              resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-          }, 100);
-        } catch (e) {
-          setError(`Error: ${e.message}`);
-        } finally {
-          setLoading(false);
-          setLoadingProgress(0);
-        }
-      };
+                    const res = await fetch(`${BACKEND_API_URL}/analyze`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ prompt })
+                    });
+                    
+                    clearInterval(apiProgressInterval);
+                    setLoadingStage('Processing recommendations...');
+                    setLoadingProgress(88);
+                    
+                    const data = await res.json();
+                    if (data.error) throw new Error(data.error.message || data.error);
+                    
+                    setLoadingStage('Finalizing optimized versions...');
+                    setLoadingProgress(95);
+                    
+                    await new Promise(r => setTimeout(r, 300));
+                    setLoadingProgress(100);
+                    
+                    const resultText = data.content ? data.content.filter(i => i.type === 'text').map(i => i.text).join('\n') : data.text || '';
+                    setResult(resultText);
+                    
+                    setAnalyzedResume(hasResumeForAnalysis);
+                    setAnalyzedCoverLetter(hasCoverLetterForAnalysis);
+                    
+                    setTimeout(() => {
+                        if (resultsRef.current) {
+                            resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                    }, 100);
+                } catch (e) {
+                    setError(`Error: ${e.message}`);
+                } finally {
+                    setLoading(false);
+                    setLoadingProgress(0);
+                }
+            };
 
-      const parseBoldText = (text, keyPrefix = '') => {
-        if (!text) return text;
-        const parts = text.split(/(\*\*[^*]+\*\*)/g);
-        return parts.map((part, i) => {
-          if (part.startsWith('**') && part.endsWith('**')) {
-            const boldText = part.slice(2, -2);
-            return React.createElement('strong', { key: `${keyPrefix}-bold-${i}`, className: "font-semibold text-slate-800" }, boldText);
-          }
-          return part;
-        });
-      };
+            const parseBoldText = (text, keyPrefix = '') => {
+                if (!text) return text;
+                
+                const parts = text.split(/(\*\*[^*]+\*\*)/g);
+                return parts.map((part, i) => {
+                    if (part.startsWith('**') && part.endsWith('**')) {
+                        const boldText = part.slice(2, -2);
+                        return <strong key={`${keyPrefix}-bold-${i}`} className="font-semibold text-slate-800">{boldText}</strong>;
+                    }
+                    return part;
+                });
+            };
 
-      const formatContent = (text) => {
-        if (!text) return null;
-        
-        const lines = text.split('\n');
-        const elements = [];
-        let currentList = [];
-        
-        lines.forEach((line, idx) => {
-          const trimmed = line.trim();
-          
-          if (!trimmed) {
-            if (currentList.length > 0) {
-              elements.push(
-                React.createElement('ul', { key: `list-${elements.length}`, className: "list-disc list-outside space-y-3 mb-6 ml-6 text-slate-600" }, currentList)
-              );
-              currentList = [];
-            }
-            return;
-          }
-          
-          const bulletMatch = trimmed.match(/^[-*•]\s+(.+)$/);
-          const numberMatch = trimmed.match(/^\d+\.\s+(.+)$/);
-          
-          if (bulletMatch || numberMatch) {
-            const content = bulletMatch ? bulletMatch[1] : numberMatch[1];
-            currentList.push(
-              React.createElement('li', { key: `item-${idx}`, className: "leading-relaxed pl-2 mb-2 text-slate-600" }, parseBoldText(content, `item-${idx}`))
-            );
-          }
-          else if (trimmed.startsWith('##') || trimmed.match(/^\*\*.+\*\*$/) || trimmed.match(/^[A-Z\s]{15,}:?$/)) {
-            if (currentList.length > 0) {
-              elements.push(
-                React.createElement('ul', { key: `list-${elements.length}`, className: "list-disc list-outside space-y-3 mb-6 ml-6 text-slate-600" }, currentList)
-              );
-              currentList = [];
-            }
-            
-            let headerText = trimmed
-              .replace(/^##\s*/, '')
-              .replace(/^\*\*/, '')
-              .replace(/\*\*$/, '')
-              .replace(/\*\*/g, '');
-            
-            elements.push(
-              React.createElement('h5', { key: `header-${idx}`, className: "font-bold text-slate-800 mt-6 mb-3 text-lg" }, headerText)
-            );
-          }
-          else {
-            if (currentList.length > 0) {
-              elements.push(
-                React.createElement('ul', { key: `list-${elements.length}`, className: "list-disc list-outside space-y-3 mb-6 ml-6 text-slate-600" }, currentList)
-              );
-              currentList = [];
-            }
-            
-            elements.push(
-              React.createElement('p', { key: `para-${idx}`, className: "text-slate-600 leading-relaxed mb-4" }, parseBoldText(trimmed, `para-${idx}`))
-            );
-          }
-        });
-        
-        if (currentList.length > 0) {
-          elements.push(
-            React.createElement('ul', { key: `list-${elements.length}`, className: "list-disc list-outside space-y-3 mb-6 ml-6 text-slate-600" }, currentList)
-          );
-        }
-        
-        return React.createElement('div', { className: "formatted-content" }, elements);
-      };
+            const formatContent = (text) => {
+                if (!text) return null;
+                
+                const lines = text.split('\n');
+                const elements = [];
+                let currentList = [];
+                
+                lines.forEach((line, idx) => {
+                    const trimmed = line.trim();
+                    
+                    if (!trimmed) {
+                        if (currentList.length > 0) {
+                            elements.push(
+                                <ul key={`list-${elements.length}`} className="list-disc list-outside space-y-3 mb-6 ml-6 text-slate-600">
+                                    {currentList}
+                                </ul>
+                            );
+                            currentList = [];
+                        }
+                        return;
+                    }
+                    
+                    const bulletMatch = trimmed.match(/^[-*•]\s+(.+)$/);
+                    const numberMatch = trimmed.match(/^\d+\.\s+(.+)$/);
+                    
+                    if (bulletMatch || numberMatch) {
+                        const content = bulletMatch ? bulletMatch[1] : numberMatch[1];
+                        currentList.push(
+                            <li key={`item-${idx}`} className="leading-relaxed pl-2 mb-2 text-slate-600">
+                                {parseBoldText(content, `item-${idx}`)}
+                            </li>
+                        );
+                    } else if (trimmed.startsWith('##') || trimmed.match(/^\*\*.+\*\*$/) || trimmed.match(/^[A-Z\s]{15,}:?$/)) {
+                        if (currentList.length > 0) {
+                            elements.push(
+                                <ul key={`list-${elements.length}`} className="list-disc list-outside space-y-3 mb-6 ml-6 text-slate-600">
+                                    {currentList}
+                                </ul>
+                            );
+                            currentList = [];
+                        }
+                        
+                        let headerText = trimmed
+                            .replace(/^##\s*/, '')
+                            .replace(/^\*\*/, '')
+                            .replace(/\*\*$/, '')
+                            .replace(/\*\*/g, '');
+                        
+                        elements.push(
+                            <h5 key={`header-${idx}`} className="font-bold text-slate-800 mt-6 mb-3 text-lg">
+                                {headerText}
+                            </h5>
+                        );
+                    } else {
+                        if (currentList.length > 0) {
+                            elements.push(
+                                <ul key={`list-${elements.length}`} className="list-disc list-outside space-y-3 mb-6 ml-6 text-slate-600">
+                                    {currentList}
+                                </ul>
+                            );
+                            currentList = [];
+                        }
+                        
+                        elements.push(
+                            <p key={`para-${idx}`} className="text-slate-600 leading-relaxed mb-4">
+                                {parseBoldText(trimmed, `para-${idx}`)}
+                            </p>
+                        );
+                    }
+                });
+                
+                if (currentList.length > 0) {
+                    elements.push(
+                        <ul key={`list-${elements.length}`} className="list-disc list-outside space-y-3 mb-6 ml-6 text-slate-600">
+                            {currentList}
+                        </ul>
+                    );
+                }
+                
+                return <div className="formatted-content">{elements}</div>;
+            };
 
-      const downloadContent = async (content, filename, documentType = 'content') => {
-        if (!content) {
-          alert(`No ${documentType} available to download.`);
-          return;
-        }
+            const [copySuccess, setCopySuccess] = useState('');
 
-        try {
-          const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = url;
-          link.download = filename;
-          link.style.display = 'none';
-          document.body.appendChild(link);
-          link.click();
-          setTimeout(() => {
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-          }, 100);
-          return true;
-        } catch (e) {
-          try {
-            await navigator.clipboard.writeText(content);
-            setCopySuccess(documentType);
-            setTimeout(() => setCopySuccess(''), 3000);
-            alert(`Download was blocked. The ${documentType} has been copied to your clipboard!`);
-            return true;
-          } catch (clipErr) {
-            alert(`Unable to download or copy the ${documentType}.`);
-            return false;
-          }
-        }
-      };
+            const downloadContent = async (content, filename, documentType = 'content') => {
+                if (!content) {
+                    alert(`No ${documentType} available to download.`);
+                    return;
+                }
 
-      const handleDownload = () => downloadContent(result, 'resume-review-results.txt', 'complete results');
-      const handleDownloadResume = () => parsed?.resumeUpdated ? downloadContent(parsed.resumeUpdated, 'optimized-resume.txt', 'updated resume') : alert('No updated resume available.');
-      const handleDownloadCoverLetter = () => parsed?.coverLetterUpdated ? downloadContent(parsed.coverLetterUpdated, 'optimized-cover-letter.txt', 'updated cover letter') : alert('No updated cover letter available.');
+                try {
+                    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = filename;
+                    link.style.display = 'none';
+                    document.body.appendChild(link);
+                    link.click();
+                    
+                    setTimeout(() => {
+                        document.body.removeChild(link);
+                        URL.revokeObjectURL(url);
+                    }, 100);
+                    
+                    return true;
+                } catch (e) {
+                    try {
+                        await navigator.clipboard.writeText(content);
+                        setCopySuccess(documentType);
+                        setTimeout(() => setCopySuccess(''), 3000);
+                        alert(`Download was blocked. The ${documentType} has been copied to your clipboard!`);
+                        return true;
+                    } catch (clipErr) {
+                        alert(`Unable to download or copy the ${documentType}.`);
+                        return false;
+                    }
+                }
+            };
 
-      const copyToClipboard = async (content, documentType) => {
-        if (!content) {
-          alert(`No ${documentType} available to copy.`);
-          return;
-        }
-        try {
-          await navigator.clipboard.writeText(content);
-          setCopySuccess(documentType);
-          setTimeout(() => setCopySuccess(''), 2000);
-        } catch (e) {
-          alert('Unable to copy to clipboard.');
-        }
-      };
+            const handleDownload = () => downloadContent(result, 'resume-review-results.txt', 'complete results');
+            const handleDownloadResume = () => parsed?.resumeUpdated && downloadContent(parsed.resumeUpdated, 'optimized-resume.txt', 'updated resume');
+            const handleDownloadCoverLetter = () => parsed?.coverLetterUpdated && downloadContent(parsed.coverLetterUpdated, 'optimized-cover-letter.txt', 'updated cover letter');
 
-      const handleCopyResume = () => copyToClipboard(parsed?.resumeUpdated, 'resume');
-      const handleCopyCoverLetter = () => copyToClipboard(parsed?.coverLetterUpdated, 'coverLetter');
-      const handleCopyAll = () => copyToClipboard(result, 'all');
+            const copyToClipboard = async (content, documentType) => {
+                if (!content) return;
+                try {
+                    await navigator.clipboard.writeText(content);
+                    setCopySuccess(documentType);
+                    setTimeout(() => setCopySuccess(''), 2000);
+                } catch (e) {
+                    alert('Unable to copy to clipboard.');
+                }
+            };
 
-      const parsed = result ? parseResults(result, analyzedResume, analyzedCoverLetter) : null;
+            const handleCopyResume = () => copyToClipboard(parsed?.resumeUpdated, 'resume');
+            const handleCopyCoverLetter = () => copyToClipboard(parsed?.coverLetterUpdated, 'coverLetter');
+            const handleCopyAll = () => copyToClipboard(result, 'all');
 
-      return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-          <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md shadow-sm border-b border-slate-200">
-            <div className="max-w-6xl mx-auto px-4 py-5">
-              <div className="flex items-center gap-4">
-                <div className="p-2.5 bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 rounded-xl shadow-lg">
-                  <Sparkles className="w-7 h-7 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-2xl md:text-3xl font-bold text-slate-800">Resume AI Pro</h1>
-                  <p className="text-slate-500 text-sm font-medium">AI Resume & Cover Letter Optimization for Technology Jobs</p>
-                </div>
-              </div>
-              <p className="text-slate-600 mt-3 text-base leading-relaxed">Resume AI Pro analyzes your resume, cover letter, and job description to optimize keyword alignment, ATS compatibility, and clarity for competitive technology hiring processes.</p>
-              <p className="text-slate-500 text-sm mt-1 flex items-center gap-2">
-                <span className="w-1.5 h-1.5 bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 rounded-full"></span>
-                Built for professionals across software engineering, product management, data, UX, IT, and other technology roles.
-              </p>
-            </div>
-          </header>
+            const parsed = result ? parseResults(result, analyzedResume, analyzedCoverLetter) : null;
 
-          <main className="max-w-6xl mx-auto px-4 py-8">
-            <div className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 rounded-2xl p-5 mb-8 border border-indigo-100">
-              <div className="flex items-start gap-4">
-                <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg shadow-sm">
-                  <Sparkles className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <p className="text-slate-700 font-semibold text-lg mb-1">Get started with AI-powered optimization</p>
-                  <p className="text-slate-600 text-sm leading-relaxed">
-                    Upload your <span className="font-semibold text-blue-600">resume</span>, <span className="font-semibold text-purple-600">cover letter</span>, or <span className="font-semibold text-indigo-600">both</span> to receive personalized feedback and optimized versions. Add a job description to tailor your documents to specific roles, and include additional instructions for custom preferences.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-6 mb-8">
-              <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 p-6 border border-slate-200/60">
-                <h2 className="text-xl font-bold mb-4 flex items-center gap-3 text-slate-800">
-                  <div className="p-2 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-lg">
-                    <FileText className="w-5 h-5 text-blue-600" />
-                  </div>
-                  Resume
-                </h2>
-                <label>
-                  <div className="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center cursor-pointer hover:border-blue-400 hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 transition-all duration-300" onDragOver={e => e.preventDefault()} onDrop={e => { e.preventDefault(); handleFile(e.dataTransfer.files[0], 'resume'); }}>
-                    <div className="p-3 bg-slate-100 rounded-full w-fit mx-auto mb-3">
-                      <Upload className="w-6 h-6 text-slate-500" />
-                    </div>
-                    <p className="text-sm font-medium text-slate-700">Drag & drop or click to upload</p>
-                    <p className="text-xs text-slate-400 mt-1">Supports PDF, DOC, DOCX, TXT</p>
-                    <input type="file" accept=".txt,.doc,.docx,.pdf" onChange={e => { handleFile(e.target.files[0], 'resume'); e.target.value = ''; }} className="hidden" />
-                  </div>
-                </label>
-                {resumeFileName ? (
-                  <div className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-white rounded-lg shadow-sm">
-                        <File className="w-5 h-5 text-blue-600" />
-                      </div>
-                      <div>
-                        <p className="font-semibold text-slate-800">{resumeFileName}</p>
-                        <p className="text-sm text-green-600 font-medium flex items-center gap-1"><Check className="w-3 h-3" />Ready for analysis</p>
-                      </div>
-                    </div>
-                    <button onClick={() => { setResume(''); setResumeFileName(''); }} className="p-2 hover:bg-white/80 rounded-lg transition-colors"><X className="w-5 h-5 text-slate-400 hover:text-slate-600" /></button>
-                  </div>
-                ) : (
-                  <textarea value={resume} onChange={e => setResume(e.target.value)} placeholder="Or paste your resume text here..." className="w-full mt-4 p-4 border border-slate-200 rounded-xl resize-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 outline-none transition-all text-slate-700 placeholder:text-slate-400" rows="6" />
-                )}
-              </div>
-
-              <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 p-6 border border-slate-200/60">
-                <h2 className="text-xl font-bold mb-4 flex items-center gap-3 text-slate-800">
-                  <div className="p-2 bg-gradient-to-br from-purple-100 to-pink-100 rounded-lg">
-                    <FileText className="w-5 h-5 text-purple-600" />
-                  </div>
-                  Cover Letter
-                </h2>
-                <label>
-                  <div className="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center cursor-pointer hover:border-purple-400 hover:bg-gradient-to-br hover:from-purple-50 hover:to-pink-50 transition-all duration-300" onDragOver={e => e.preventDefault()} onDrop={e => { e.preventDefault(); handleFile(e.dataTransfer.files[0], 'coverLetter'); }}>
-                    <div className="p-3 bg-slate-100 rounded-full w-fit mx-auto mb-3">
-                      <Upload className="w-6 h-6 text-slate-500" />
-                    </div>
-                    <p className="text-sm font-medium text-slate-700">Drag & drop or click to upload</p>
-                    <p className="text-xs text-slate-400 mt-1">Supports PDF, DOC, DOCX, TXT</p>
-                    <input type="file" accept=".txt,.doc,.docx,.pdf" onChange={e => { handleFile(e.target.files[0], 'coverLetter'); e.target.value = ''; }} className="hidden" />
-                  </div>
-                </label>
-                {coverLetterFileName ? (
-                  <div className="mt-4 p-4 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-xl flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-white rounded-lg shadow-sm">
-                        <File className="w-5 h-5 text-purple-600" />
-                      </div>
-                      <div>
-                        <p className="font-semibold text-slate-800">{coverLetterFileName}</p>
-                        <p className="text-sm text-green-600 font-medium flex items-center gap-1"><Check className="w-3 h-3" />Ready for analysis</p>
-                      </div>
-                    </div>
-                    <button onClick={() => { setCoverLetter(''); setCoverLetterFileName(''); }} className="p-2 hover:bg-white/80 rounded-lg transition-colors"><X className="w-5 h-5 text-slate-400 hover:text-slate-600" /></button>
-                  </div>
-                ) : (
-                  <textarea value={coverLetter} onChange={e => setCoverLetter(e.target.value)} placeholder="Or paste your cover letter text here..." className="w-full mt-4 p-4 border border-slate-200 rounded-xl resize-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 outline-none transition-all text-slate-700 placeholder:text-slate-400" rows="6" />
-                )}
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 p-6 border border-slate-200/60 mb-8">
-              <h2 className="text-xl font-bold mb-4 flex items-center gap-3 text-slate-800">
-                <div className="p-2 bg-gradient-to-br from-green-100 to-emerald-100 rounded-lg">
-                  <Briefcase className="w-5 h-5 text-green-600" />
-                </div>
-                Job Description <span className="text-slate-400 font-normal text-base">(Optional)</span>
-              </h2>
-              <textarea value={jobDescription} onChange={e => setJobDescription(e.target.value)} placeholder="Paste the job description here to tailor your documents to the specific role..." className="w-full p-4 border border-slate-200 rounded-xl resize-none focus:ring-2 focus:ring-green-500/20 focus:border-green-400 outline-none transition-all text-slate-700 placeholder:text-slate-400" rows="8" />
-              <p className="text-sm text-slate-500 mt-3 flex items-center gap-2">
-                <span className="inline-block w-1.5 h-1.5 bg-green-500 rounded-full"></span>
-                Adding a job description helps optimize keyword alignment and tailor your documents
-              </p>
-            </div>
-
-            <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 p-6 border border-slate-200/60 mb-8">
-              <h2 className="text-xl font-bold mb-4 flex items-center gap-3 text-slate-800">
-                <div className="p-2 bg-gradient-to-br from-amber-100 to-orange-100 rounded-lg">
-                  <MessageSquare className="w-5 h-5 text-amber-600" />
-                </div>
-                Additional Instructions <span className="text-slate-400 font-normal text-base">(Optional)</span>
-              </h2>
-              <textarea value={additionalInstructions} onChange={e => setAdditionalInstructions(e.target.value)} placeholder="Add any specific instructions, preferences, or details you'd like the AI to consider when optimizing your resume or cover letter (e.g., tone, emphasis, skills to highlight, or experiences to include or avoid)." className="w-full p-4 border border-slate-200 rounded-xl resize-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400 outline-none transition-all text-slate-700 placeholder:text-slate-400" rows="4" />
-            </div>
-
-            {loading && (
-              <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50">
-                <div className="bg-white rounded-3xl shadow-2xl p-10 max-w-md w-full mx-4 border border-slate-200">
-                  <div className="text-center">
-                    <div className="mb-8">
-                      <div className="relative w-24 h-24 mx-auto">
-                        <div className="absolute inset-0 border-4 border-slate-200 rounded-full"></div>
-                        <div className="absolute inset-0 border-4 border-transparent border-t-blue-500 border-r-indigo-500 rounded-full animate-spin"></div>
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl">
-                            <Sparkles className="w-6 h-6 text-white" />
-                          </div>
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+                    <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md shadow-sm border-b border-slate-200">
+                        <div className="max-w-6xl mx-auto px-4 py-5">
+                            <div className="flex items-center gap-4">
+                                <div className="p-2.5 bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 rounded-xl shadow-lg">
+                                    <Sparkles className="w-7 h-7 text-white" />
+                                </div>
+                                <div>
+                                    <h1 className="text-2xl md:text-3xl font-bold text-slate-800">Resume AI Pro</h1>
+                                    <p className="text-slate-500 text-sm font-medium">AI Resume & Cover Letter Optimization</p>
+                                </div>
+                            </div>
+                            <p className="text-slate-600 mt-3 text-base leading-relaxed">AI-powered optimization for keyword alignment, ATS compatibility, and clarity.</p>
                         </div>
-                      </div>
-                    </div>
-                    <h3 className="text-2xl font-bold text-slate-800 mb-2">Analyzing Your Documents</h3>
-                    <p className="text-slate-500 mb-8">{loadingStage}</p>
-                    <div className="mb-8">
-                      <div className="flex justify-between items-center mb-3">
-                        <span className="text-sm font-semibold text-slate-600">Progress</span>
-                        <span className="text-sm font-bold text-blue-600">{loadingProgress}%</span>
-                      </div>
-                      <div className="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
-                        <div className="bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 h-3 rounded-full transition-all duration-500 ease-out" style={{ width: `${loadingProgress}%` }}></div>
-                      </div>
-                    </div>
-                    <div className="space-y-3 text-sm">
-                      <div className={`flex items-center justify-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-300 ${loadingProgress >= 20 ? 'bg-green-50 border border-green-200' : 'bg-slate-50 border border-slate-200'}`}>
-                        <div className={`w-2.5 h-2.5 rounded-full transition-colors ${loadingProgress >= 20 ? 'bg-green-500' : 'bg-slate-300 animate-pulse'}`}></div>
-                        <span className={`${loadingProgress >= 20 ? 'text-green-600 font-semibold' : 'text-slate-400'}`}>Reading documents</span>
-                      </div>
-                      <div className={`flex items-center justify-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-300 ${loadingProgress >= 40 ? 'bg-green-50 border border-green-200' : 'bg-slate-50 border border-slate-200'}`}>
-                        <div className={`w-2.5 h-2.5 rounded-full transition-colors ${loadingProgress >= 40 ? 'bg-green-500' : 'bg-slate-300 animate-pulse'}`}></div>
-                        <span className={`${loadingProgress >= 40 ? 'text-green-600 font-semibold' : 'text-slate-400'}`}>Analyzing content</span>
-                      </div>
-                      <div className={`flex items-center justify-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-300 ${loadingProgress >= 70 ? 'bg-green-50 border border-green-200' : 'bg-slate-50 border border-slate-200'}`}>
-                        <div className={`w-2.5 h-2.5 rounded-full transition-colors ${loadingProgress >= 70 ? 'bg-green-500' : 'bg-slate-300 animate-pulse'}`}></div>
-                        <span className={`${loadingProgress >= 70 ? 'text-green-600 font-semibold' : 'text-slate-400'}`}>Generating optimized versions</span>
-                      </div>
-                    </div>
-                    <p className="text-xs text-slate-400 mt-8">This may take 1-2 minutes</p>
-                  </div>
-                </div>
-              </div>
-            )}
+                    </header>
 
-            {error && (
-              <div className="bg-gradient-to-r from-red-50 to-rose-50 border border-red-200 rounded-2xl p-5 mb-6 flex items-start gap-4 shadow-sm">
-                <div className="p-2 bg-red-100 rounded-lg">
-                  <AlertCircle className="w-5 h-5 text-red-600" />
-                </div>
-                <p className="text-red-700 font-medium pt-1">{error}</p>
-              </div>
-            )}
-
-            <div className="text-center mb-10">
-              <button onClick={analyze} disabled={loading} className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 text-white px-12 py-5 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 disabled:opacity-50 disabled:hover:transform-none disabled:hover:shadow-xl">
-                <span className="flex items-center gap-3">{loading ? <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Sparkles className="w-6 h-6" />}{loading ? 'Analyzing...' : 'Analyze & Optimize'}</span>
-              </button>
-              <p className="text-slate-400 text-sm mt-4">Secure & Private</p>
-            </div>
-
-            {result && parsed && (
-              <div className="space-y-6" ref={resultsRef}>
-                <div className="flex items-center justify-between bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 rounded-t-2xl p-6 flex-wrap gap-4">
-                  <h2 className="text-2xl font-bold text-white">Your Personalized Review</h2>
-                  <div className="flex items-center gap-3">
-                    <button onClick={handleCopyAll} className="flex items-center gap-2 px-4 py-2.5 bg-slate-600 text-white rounded-xl font-semibold hover:bg-slate-500 transition-colors shadow-md">
-                      {copySuccess === 'all' ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
-                      {copySuccess === 'all' ? 'Copied!' : 'Copy All'}
-                    </button>
-                    <button onClick={handleDownload} className="flex items-center gap-2 px-4 py-2.5 bg-white text-slate-800 rounded-xl font-semibold hover:bg-slate-100 transition-colors shadow-md">
-                      <Download className="w-4 h-4" />Download All
-                    </button>
-                  </div>
-                </div>
-
-                <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200/60">
-                  <div className="flex bg-slate-100">
-                    <button onClick={() => setActiveTab('resume')} className={`flex-1 py-5 px-6 font-bold text-lg transition-all duration-300 ${activeTab === 'resume' ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg' : 'text-slate-600 hover:bg-slate-200'}`}>
-                      <div className="flex items-center justify-center gap-2"><FileText className="w-5 h-5" /><span>Resume Review</span></div>
-                    </button>
-                    <button onClick={() => setActiveTab('coverLetter')} className={`flex-1 py-5 px-6 font-bold text-lg transition-all duration-300 ${activeTab === 'coverLetter' ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg' : 'text-slate-600 hover:bg-slate-200'}`}>
-                      <div className="flex items-center justify-center gap-2"><FileText className="w-5 h-5" /><span>Cover Letter Review</span></div>
-                    </button>
-                  </div>
-
-                  <div className="p-8">
-                    {activeTab === 'resume' && (
-                      <div className="space-y-8">
-                        {!analyzedResume ? (
-                          <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-blue-50 border border-blue-200/60 rounded-2xl p-10 text-center">
-                            <div className="p-4 bg-white rounded-2xl shadow-sm w-fit mx-auto mb-5">
-                              <FileText className="w-10 h-10 text-blue-400" />
-                            </div>
-                            <h3 className="text-xl font-bold text-slate-700 mb-3">No Resume Analyzed</h3>
-                            <p className="text-slate-500 max-w-md mx-auto">You didn't provide a resume for this analysis. To receive resume feedback and an optimized version, please upload or paste your resume and run the analysis again.</p>
-                          </div>
-                        ) : (
-                          <>
-                            {(parsed.resumeAnalysis || parsed.resumeRecommendations) && (
-                              <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-blue-50 rounded-2xl p-8 border border-blue-200/60">
-                                <h3 className="text-xl font-bold mb-6 text-slate-800 flex items-center gap-3">
-                                  <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg">
+                    <main className="max-w-6xl mx-auto px-4 py-8">
+                        <div className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 rounded-2xl p-5 mb-8 border border-indigo-100">
+                            <div className="flex items-start gap-4">
+                                <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg shadow-sm">
                                     <Sparkles className="w-5 h-5 text-white" />
-                                  </div>
-                                  Analysis & Recommendations
-                                </h3>
-                                {parsed.resumeAnalysis && (
-                                  <div className="mb-6">
-                                    <h4 className="font-semibold mb-3 flex items-center gap-2 text-slate-700"><span className="w-2.5 h-2.5 bg-blue-500 rounded-full"></span>Strengths and Areas for Improvement</h4>
-                                    <div className="bg-white p-6 rounded-xl border border-blue-100 shadow-sm">{formatContent(parsed.resumeAnalysis)}</div>
-                                  </div>
-                                )}
-                                {parsed.resumeRecommendations && (
-                                  <div>
-                                    <h4 className="font-semibold mb-3 flex items-center gap-2 text-slate-700"><span className="w-2.5 h-2.5 bg-indigo-500 rounded-full"></span>Specific Recommendations</h4>
-                                    <div className="bg-white p-6 rounded-xl border border-blue-100 shadow-sm">{formatContent(parsed.resumeRecommendations)}</div>
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                            {parsed.resumeUpdated && (
-                              <div className="bg-gradient-to-br from-emerald-50 via-green-50 to-emerald-50 rounded-2xl p-8 border border-emerald-200/60">
-                                <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
-                                  <h3 className="text-xl font-bold text-slate-800 flex items-center gap-3">
-                                    <div className="p-2 bg-gradient-to-br from-emerald-500 to-green-500 rounded-lg">
-                                      <FileText className="w-5 h-5 text-white" />
-                                    </div>
-                                    Updated Resume
-                                  </h3>
-                                  <div className="flex items-center gap-2">
-                                    <button onClick={handleCopyResume} className="flex items-center gap-2 px-4 py-2 bg-white border border-emerald-300 text-emerald-700 rounded-lg font-semibold hover:bg-emerald-50 transition-all shadow-sm text-sm">
-                                      {copySuccess === 'resume' ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
-                                      {copySuccess === 'resume' ? 'Copied!' : 'Copy'}
-                                    </button>
-                                    <button onClick={handleDownloadResume} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-green-500 text-white rounded-lg font-semibold hover:from-emerald-600 hover:to-green-600 transition-all shadow-md hover:shadow-lg text-sm">
-                                      <Download className="w-4 h-4" />Download
-                                    </button>
-                                  </div>
                                 </div>
-                                <div className="bg-white p-6 rounded-xl border border-emerald-100 shadow-sm">
-                                  {formatContent(parsed.resumeUpdated)}
+                                <div>
+                                    <p className="text-slate-700 font-semibold text-lg mb-1">Get started with AI-powered optimization</p>
+                                    <p className="text-slate-600 text-sm leading-relaxed">
+                                        Upload your <span className="font-semibold text-blue-600">resume</span>, <span className="font-semibold text-purple-600">cover letter</span>, or <span className="font-semibold text-indigo-600">both</span> to receive personalized feedback and optimized versions.
+                                    </p>
                                 </div>
-                              </div>
-                            )}
-                          </>
-                        )}
-                      </div>
-                    )}
-
-                    {activeTab === 'coverLetter' && (
-                      <div className="space-y-8">
-                        {!analyzedCoverLetter ? (
-                          <div className="bg-gradient-to-br from-purple-50 via-pink-50 to-purple-50 border border-purple-200/60 rounded-2xl p-10 text-center">
-                            <div className="p-4 bg-white rounded-2xl shadow-sm w-fit mx-auto mb-5">
-                              <FileText className="w-10 h-10 text-purple-400" />
                             </div>
-                            <h3 className="text-xl font-bold text-slate-700 mb-3">No Cover Letter Analyzed</h3>
-                            <p className="text-slate-500 max-w-md mx-auto">You didn't provide a cover letter for this analysis. To receive cover letter feedback and an optimized version, please upload or paste your cover letter and run the analysis again.</p>
-                          </div>
-                        ) : (
-                          <>
-                            {(parsed.coverLetterAnalysis || parsed.coverLetterRecommendations) && (
-                              <div className="bg-gradient-to-br from-purple-50 via-pink-50 to-purple-50 rounded-2xl p-8 border border-purple-200/60">
-                                <h3 className="text-xl font-bold mb-6 text-slate-800 flex items-center gap-3">
-                                  <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg">
-                                    <Sparkles className="w-5 h-5 text-white" />
-                                  </div>
-                                  Analysis & Recommendations
-                                </h3>
-                                {parsed.coverLetterAnalysis && (
-                                  <div className="mb-6">
-                                    <h4 className="font-semibold mb-3 flex items-center gap-2 text-slate-700"><span className="w-2.5 h-2.5 bg-purple-500 rounded-full"></span>Strengths and Areas for Improvement</h4>
-                                    <div className="bg-white p-6 rounded-xl border border-purple-100 shadow-sm">{formatContent(parsed.coverLetterAnalysis)}</div>
-                                  </div>
-                                )}
-                                {parsed.coverLetterRecommendations && (
-                                  <div>
-                                    <h4 className="font-semibold mb-3 flex items-center gap-2 text-slate-700"><span className="w-2.5 h-2.5 bg-pink-500 rounded-full"></span>Specific Recommendations</h4>
-                                    <div className="bg-white p-6 rounded-xl border border-purple-100 shadow-sm">{formatContent(parsed.coverLetterRecommendations)}</div>
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                            {parsed.coverLetterUpdated && (
-                              <div className="bg-gradient-to-br from-emerald-50 via-green-50 to-emerald-50 rounded-2xl p-8 border border-emerald-200/60">
-                                <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
-                                  <h3 className="text-xl font-bold text-slate-800 flex items-center gap-3">
-                                    <div className="p-2 bg-gradient-to-br from-emerald-500 to-green-500 rounded-lg">
-                                      <FileText className="w-5 h-5 text-white" />
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-6 mb-8">
+                            <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 p-6 border border-slate-200/60">
+                                <h2 className="text-xl font-bold mb-4 flex items-center gap-3 text-slate-800">
+                                    <div className="p-2 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-lg">
+                                        <FileText className="w-5 h-5 text-blue-600" />
                                     </div>
-                                    Updated Cover Letter
-                                  </h3>
-                                  <div className="flex items-center gap-2">
-                                    <button onClick={handleCopyCoverLetter} className="flex items-center gap-2 px-4 py-2 bg-white border border-emerald-300 text-emerald-700 rounded-lg font-semibold hover:bg-emerald-50 transition-all shadow-sm text-sm">
-                                      {copySuccess === 'coverLetter' ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
-                                      {copySuccess === 'coverLetter' ? 'Copied!' : 'Copy'}
-                                    </button>
-                                    <button onClick={handleDownloadCoverLetter} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-green-500 text-white rounded-lg font-semibold hover:from-emerald-600 hover:to-green-600 transition-all shadow-md hover:shadow-lg text-sm">
-                                      <Download className="w-4 h-4" />Download
-                                    </button>
-                                  </div>
+                                    Resume
+                                </h2>
+                                <label>
+                                    <div className="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center cursor-pointer hover:border-blue-400 hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 transition-all duration-300" onDragOver={e => e.preventDefault()} onDrop={e => { e.preventDefault(); handleFile(e.dataTransfer.files[0], 'resume'); }}>
+                                        <div className="p-3 bg-slate-100 rounded-full w-fit mx-auto mb-3">
+                                            <Upload className="w-6 h-6 text-slate-500" />
+                                        </div>
+                                        <p className="text-sm font-medium text-slate-700">Drag & drop or click to upload</p>
+                                        <p className="text-xs text-slate-400 mt-1">Supports PDF, DOCX, TXT</p>
+                                        <input type="file" accept=".txt,.docx,.pdf" onChange={e => { handleFile(e.target.files[0], 'resume'); e.target.value = ''; }} className="hidden" />
+                                    </div>
+                                </label>
+                                {resumeFileName ? (
+                                    <div className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <div className="p-2 bg-white rounded-lg shadow-sm">
+                                                <File className="w-5 h-5 text-blue-600" />
+                                            </div>
+                                            <div>
+                                                <p className="font-semibold text-slate-800">{resumeFileName}</p>
+                                                <p className="text-sm text-green-600 font-medium flex items-center gap-1"><Check className="w-3 h-3" />Ready for analysis</p>
+                                            </div>
+                                        </div>
+                                        <button onClick={() => { setResume(''); setResumeFileName(''); }} className="p-2 hover:bg-white/80 rounded-lg transition-colors"><X className="w-5 h-5 text-slate-400 hover:text-slate-600" /></button>
+                                    </div>
+                                ) : (
+                                    <textarea value={resume} onChange={e => setResume(e.target.value)} placeholder="Or paste your resume text here..." className="w-full mt-4 p-4 border border-slate-200 rounded-xl resize-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 outline-none transition-all text-slate-700 placeholder:text-slate-400" rows="6" />
+                                )}
+                            </div>
+
+                            <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 p-6 border border-slate-200/60">
+                                <h2 className="text-xl font-bold mb-4 flex items-center gap-3 text-slate-800">
+                                    <div className="p-2 bg-gradient-to-br from-purple-100 to-pink-100 rounded-lg">
+                                        <FileText className="w-5 h-5 text-purple-600" />
+                                    </div>
+                                    Cover Letter
+                                </h2>
+                                <label>
+                                    <div className="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center cursor-pointer hover:border-purple-400 hover:bg-gradient-to-br hover:from-purple-50 hover:to-pink-50 transition-all duration-300" onDragOver={e => e.preventDefault()} onDrop={e => { e.preventDefault(); handleFile(e.dataTransfer.files[0], 'coverLetter'); }}>
+                                        <div className="p-3 bg-slate-100 rounded-full w-fit mx-auto mb-3">
+                                            <Upload className="w-6 h-6 text-slate-500" />
+                                        </div>
+                                        <p className="text-sm font-medium text-slate-700">Drag & drop or click to upload</p>
+                                        <p className="text-xs text-slate-400 mt-1">Supports PDF, DOCX, TXT</p>
+                                        <input type="file" accept=".txt,.docx,.pdf" onChange={e => { handleFile(e.target.files[0], 'coverLetter'); e.target.value = ''; }} className="hidden" />
+                                    </div>
+                                </label>
+                                {coverLetterFileName ? (
+                                    <div className="mt-4 p-4 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-xl flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <div className="p-2 bg-white rounded-lg shadow-sm">
+                                                <File className="w-5 h-5 text-purple-600" />
+                                            </div>
+                                            <div>
+                                                <p className="font-semibold text-slate-800">{coverLetterFileName}</p>
+                                                <p className="text-sm text-green-600 font-medium flex items-center gap-1"><Check className="w-3 h-3" />Ready for analysis</p>
+                                            </div>
+                                        </div>
+                                        <button onClick={() => { setCoverLetter(''); setCoverLetterFileName(''); }} className="p-2 hover:bg-white/80 rounded-lg transition-colors"><X className="w-5 h-5 text-slate-400 hover:text-slate-600" /></button>
+                                    </div>
+                                ) : (
+                                    <textarea value={coverLetter} onChange={e => setCoverLetter(e.target.value)} placeholder="Or paste your cover letter text here..." className="w-full mt-4 p-4 border border-slate-200 rounded-xl resize-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 outline-none transition-all text-slate-700 placeholder:text-slate-400" rows="6" />
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 p-6 border border-slate-200/60 mb-8">
+                            <h2 className="text-xl font-bold mb-4 flex items-center gap-3 text-slate-800">
+                                <div className="p-2 bg-gradient-to-br from-green-100 to-emerald-100 rounded-lg">
+                                    <Briefcase className="w-5 h-5 text-green-600" />
                                 </div>
-                                <div className="bg-white p-6 rounded-xl border border-emerald-100 shadow-sm">{formatContent(parsed.coverLetterUpdated)}</div>
-                              </div>
-                            )}
-                          </>
+                                Job Description <span className="text-slate-400 font-normal text-base">(Optional)</span>
+                            </h2>
+                            <textarea value={jobDescription} onChange={e => setJobDescription(e.target.value)} placeholder="Paste the job description here to tailor your documents..." className="w-full p-4 border border-slate-200 rounded-xl resize-none focus:ring-2 focus:ring-green-500/20 focus:border-green-400 outline-none transition-all text-slate-700 placeholder:text-slate-400" rows="8" />
+                        </div>
+
+                        <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 p-6 border border-slate-200/60 mb-8">
+                            <h2 className="text-xl font-bold mb-4 flex items-center gap-3 text-slate-800">
+                                <div className="p-2 bg-gradient-to-br from-amber-100 to-orange-100 rounded-lg">
+                                    <MessageSquare className="w-5 h-5 text-amber-600" />
+                                </div>
+                                Additional Instructions <span className="text-slate-400 font-normal text-base">(Optional)</span>
+                            </h2>
+                            <textarea value={additionalInstructions} onChange={e => setAdditionalInstructions(e.target.value)} placeholder="Add any specific instructions or preferences..." className="w-full p-4 border border-slate-200 rounded-xl resize-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400 outline-none transition-all text-slate-700 placeholder:text-slate-400" rows="4" />
+                        </div>
+
+                        {loading && !showPaymentModal && (
+                            <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50">
+                                <div className="bg-white rounded-3xl shadow-2xl p-10 max-w-md w-full mx-4 border border-slate-200">
+                                    <div className="text-center">
+                                        <div className="mb-8">
+                                            <div className="relative w-24 h-24 mx-auto">
+                                                <div className="absolute inset-0 border-4 border-slate-200 rounded-full"></div>
+                                                <div className="absolute inset-0 border-4 border-transparent border-t-blue-500 border-r-indigo-500 rounded-full animate-spin"></div>
+                                                <div className="absolute inset-0 flex items-center justify-center">
+                                                    <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl">
+                                                        <Sparkles className="w-6 h-6 text-white" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <h3 className="text-2xl font-bold text-slate-800 mb-2">Analyzing Your Documents</h3>
+                                        <p className="text-slate-500 mb-8">{loadingStage}</p>
+                                        <div className="mb-8">
+                                            <div className="flex justify-between items-center mb-3">
+                                                <span className="text-sm font-semibold text-slate-600">Progress</span>
+                                                <span className="text-sm font-bold text-blue-600">{loadingProgress}%</span>
+                                            </div>
+                                            <div className="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+                                                <div className="bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 h-3 rounded-full transition-all duration-500 ease-out" style={{ width: `${loadingProgress}%` }}></div>
+                                            </div>
+                                        </div>
+                                        <p className="text-xs text-slate-400 mt-8">This may take 1-2 minutes</p>
+                                    </div>
+                                </div>
+                            </div>
                         )}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-          </main>
 
-          <footer className="bg-gradient-to-r from-slate-800 via-slate-900 to-slate-800 mt-16">
-            <div className="max-w-6xl mx-auto px-4 py-10 text-center">
-              <div className="flex items-center justify-center gap-3 mb-4">
-                <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg">
-                  <Sparkles className="w-5 h-5 text-white" />
-                </div>
-                <span className="text-white font-bold text-lg">Resume AI Pro</span>
-              </div>
-              <p className="text-slate-400">Powered by Claude AI</p>
-            </div>
-          </footer>
-        </div>
-      );
-    }
+                        {showPaymentModal && (
+                            <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50">
+                                <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full mx-4 border border-slate-200">
+                                    <div className="text-center">
+                                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 border border-green-200 rounded-full mb-6">
+                                            <div className="w-2.5 h-2.5 bg-green-500 rounded-full"></div>
+                                            <span className="text-green-700 font-semibold text-sm">Analysis 30% Complete</span>
+                                        </div>
+                                        
+                                        <h3 className="text-2xl font-bold text-slate-800 mb-3">Your Documents Are Ready for Optimization!</h3>
+                                        
+                                        <p className="text-slate-600 mb-2">
+                                            We've analyzed your resume and cover letter and identified key areas for improvement.
+                                        </p>
+                                        
+                                        <p className="text-slate-500 text-sm mb-6">
+                                            Complete your payment to receive professionally optimized documents with ATS-compatible formatting and keyword alignment.
+                                        </p>
+                                        
+                                        <div className="bg-slate-50 rounded-2xl p-6 mb-6 border border-slate-200">
+                                            <div className="flex items-center justify-between mb-4">
+                                                <span className="font-semibold text-slate-700">Optimization Service</span>
+                                                <span className="text-2xl font-bold text-green-600">$1.99</span>
+                                            </div>
+                                            <ul className="text-left text-sm text-slate-600 space-y-2">
+                                                <li className="flex items-center gap-2">
+                                                    <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full"></div>
+                                                    Detailed analysis & recommendations
+                                                </li>
+                                                <li className="flex items-center gap-2">
+                                                    <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full"></div>
+                                                    Professionally rewritten documents
+                                                </li>
+                                                <li className="flex items-center gap-2">
+                                                    <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full"></div>
+                                                    ATS-optimized formatting
+                                                </li>
+                                                <li className="flex items-center gap-2">
+                                                    <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full"></div>
+                                                    Instant download & results
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        
+                                        <button 
+                                            onClick={initiatePayment} 
+                                            disabled={paymentProcessing}
+                                            className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-4 px-6 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                                        >
+                                            {paymentProcessing ? (
+                                                <>
+                                                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                                    Processing...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Sparkles className="w-5 h-5" />
+                                                    Pay $1.99 for Updated Documents
+                                                </>
+                                            )}
+                                        </button>
+                                        
+                                        <button 
+                                            onClick={() => {
+                                                setShowPaymentModal(false);
+                                                setLoading(false);
+                                                setLoadingProgress(0);
+                                            }}
+                                            className="mt-4 text-slate-500 hover:text-slate-700 text-sm font-medium transition-colors"
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<ResumeReviewApp />);
-  </script>
+                        {error && (
+                            <div className="bg-gradient-to-r from-red-50 to-rose-50 border border-red-200 rounded-2xl p-5 mb-6 flex items-start gap-4 shadow-sm">
+                                <div className="p-2 bg-red-100 rounded-lg">
+                                    <AlertCircle className="w-5 h-5 text-red-600" />
+                                </div>
+                                <p className="text-red-700 font-medium pt-1">{error}</p>
+                            </div>
+                        )}
+
+                        <div className="text-center mb-10">
+                            <button onClick={analyze} disabled={loading} className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 text-white px-12 py-5 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 disabled:opacity-50 disabled:hover:transform-none disabled:hover:shadow-xl">
+                                <span className="flex items-center gap-3">{loading ? <div className="w-6 h-6 border-3 border-white border-t-transparent rounded-full animate-spin" /> : <Sparkles className="w-6 h-6" />}{loading ? 'Analyzing...' : 'Analyze & Optimize'}</span>
+                            </button>
+                            <p className="text-slate-400 text-sm mt-4">Secure & Private</p>
+                        </div>
+
+                        {result && parsed && (
+                            <div className="space-y-6" ref={resultsRef}>
+                                <div className="flex items-center justify-between bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 rounded-t-2xl p-6">
+                                    <h2 className="text-2xl font-bold text-white">Your Personalized Review</h2>
+                                    <div className="flex items-center gap-3">
+                                        <button onClick={handleCopyAll} className="flex items-center gap-2 px-4 py-2.5 bg-slate-600 text-white rounded-xl font-semibold hover:bg-slate-500 transition-colors shadow-md">
+                                            {copySuccess === 'all' ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
+                                            {copySuccess === 'all' ? 'Copied!' : 'Copy All'}
+                                        </button>
+                                        <button onClick={handleDownload} className="flex items-center gap-2 px-4 py-2.5 bg-white text-slate-800 rounded-xl font-semibold hover:bg-slate-100 transition-colors shadow-md">
+                                            <Download className="w-4 h-4" />Download All
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200/60">
+                                    <div className="flex bg-slate-100">
+                                        <button onClick={() => setActiveTab('resume')} className={`flex-1 py-5 px-6 font-bold text-lg transition-all duration-300 ${activeTab === 'resume' ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg' : 'text-slate-600 hover:bg-slate-200'}`}>
+                                            <div className="flex items-center justify-center gap-2"><FileText className="w-5 h-5" /><span>Resume Review</span></div>
+                                        </button>
+                                        <button onClick={() => setActiveTab('coverLetter')} className={`flex-1 py-5 px-6 font-bold text-lg transition-all duration-300 ${activeTab === 'coverLetter' ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg' : 'text-slate-600 hover:bg-slate-200'}`}>
+                                            <div className="flex items-center justify-center gap-2"><FileText className="w-5 h-5" /><span>Cover Letter Review</span></div>
+                                        </button>
+                                    </div>
+
+                                    <div className="p-8">
+                                        {activeTab === 'resume' && (
+                                            <div className="space-y-8">
+                                                {!analyzedResume ? (
+                                                    <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-blue-50 border border-blue-200/60 rounded-2xl p-10 text-center">
+                                                        <FileText className="w-10 h-10 text-blue-400 mx-auto mb-5" />
+                                                        <h3 className="text-xl font-bold text-slate-700 mb-3">No Resume Analyzed</h3>
+                                                        <p className="text-slate-500">Upload or paste your resume and run the analysis again.</p>
+                                                    </div>
+                                                ) : (
+                                                    <>
+                                                        {(parsed.resumeAnalysis || parsed.resumeRecommendations) && (
+                                                            <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-blue-50 rounded-2xl p-8 border border-blue-200/60">
+                                                                <h3 className="text-xl font-bold mb-6 text-slate-800 flex items-center gap-3">
+                                                                    <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg">
+                                                                        <Sparkles className="w-5 h-5 text-white" />
+                                                                    </div>
+                                                                    Analysis & Recommendations
+                                                                </h3>
+                                                                {parsed.resumeAnalysis && (
+                                                                    <div className="mb-6">
+                                                                        <h4 className="font-semibold mb-3 text-slate-700">Strengths and Areas for Improvement</h4>
+                                                                        <div className="bg-white p-6 rounded-xl border border-blue-100 shadow-sm">{formatContent(parsed.resumeAnalysis)}</div>
+                                                                    </div>
+                                                                )}
+                                                                {parsed.resumeRecommendations && (
+                                                                    <div>
+                                                                        <h4 className="font-semibold mb-3 text-slate-700">Specific Recommendations</h4>
+                                                                        <div className="bg-white p-6 rounded-xl border border-blue-100 shadow-sm">{formatContent(parsed.resumeRecommendations)}</div>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                        {parsed.resumeUpdated && (
+                                                            <div className="bg-gradient-to-br from-emerald-50 via-green-50 to-emerald-50 rounded-2xl p-8 border border-emerald-200/60">
+                                                                <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
+                                                                    <h3 className="text-xl font-bold text-slate-800 flex items-center gap-3">
+                                                                        <div className="p-2 bg-gradient-to-br from-emerald-500 to-green-500 rounded-lg">
+                                                                            <FileText className="w-5 h-5 text-white" />
+                                                                        </div>
+                                                                        Updated Resume
+                                                                    </h3>
+                                                                    <div className="flex items-center gap-2">
+                                                                        <button onClick={handleCopyResume} className="flex items-center gap-2 px-4 py-2 bg-white border border-emerald-300 text-emerald-700 rounded-lg font-semibold hover:bg-emerald-50 transition-all shadow-sm text-sm">
+                                                                            {copySuccess === 'resume' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                                                                            {copySuccess === 'resume' ? 'Copied!' : 'Copy'}
+                                                                        </button>
+                                                                        <button onClick={handleDownloadResume} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-green-500 text-white rounded-lg font-semibold hover:from-emerald-600 hover:to-green-600 transition-all shadow-md text-sm">
+                                                                            <Download className="w-4 h-4" />Download
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="bg-white p-6 rounded-xl border border-emerald-100 shadow-sm">
+                                                                    {formatContent(parsed.resumeUpdated)}
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </>
+                                                )}
+                                            </div>
+                                        )}
+
+                                        {activeTab === 'coverLetter' && (
+                                            <div className="space-y-8">
+                                                {!analyzedCoverLetter ? (
+                                                    <div className="bg-gradient-to-br from-purple-50 via-pink-50 to-purple-50 border border-purple-200/60 rounded-2xl p-10 text-center">
+                                                        <FileText className="w-10 h-10 text-purple-400 mx-auto mb-5" />
+                                                        <h3 className="text-xl font-bold text-slate-700 mb-3">No Cover Letter Analyzed</h3>
+                                                        <p className="text-slate-500">Upload or paste your cover letter and run the analysis again.</p>
+                                                    </div>
+                                                ) : (
+                                                    <>
+                                                        {(parsed.coverLetterAnalysis || parsed.coverLetterRecommendations) && (
+                                                            <div className="bg-gradient-to-br from-purple-50 via-pink-50 to-purple-50 rounded-2xl p-8 border border-purple-200/60">
+                                                                <h3 className="text-xl font-bold mb-6 text-slate-800 flex items-center gap-3">
+                                                                    <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg">
+                                                                        <Sparkles className="w-5 h-5 text-white" />
+                                                                    </div>
+                                                                    Analysis & Recommendations
+                                                                </h3>
+                                                                {parsed.coverLetterAnalysis && (
+                                                                    <div className="mb-6">
+                                                                        <h4 className="font-semibold mb-3 text-slate-700">Strengths and Areas for Improvement</h4>
+                                                                        <div className="bg-white p-6 rounded-xl border border-purple-100 shadow-sm">{formatContent(parsed.coverLetterAnalysis)}</div>
+                                                                    </div>
+                                                                )}
+                                                                {parsed.coverLetterRecommendations && (
+                                                                    <div>
+                                                                        <h4 className="font-semibold mb-3 text-slate-700">Specific Recommendations</h4>
+                                                                        <div className="bg-white p-6 rounded-xl border border-purple-100 shadow-sm">{formatContent(parsed.coverLetterRecommendations)}</div>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                        {parsed.coverLetterUpdated && (
+                                                            <div className="bg-gradient-to-br from-emerald-50 via-green-50 to-emerald-50 rounded-2xl p-8 border border-emerald-200/60">
+                                                                <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
+                                                                    <h3 className="text-xl font-bold text-slate-800 flex items-center gap-3">
+                                                                        <div className="p-2 bg-gradient-to-br from-emerald-500 to-green-500 rounded-lg">
+                                                                            <FileText className="w-5 h-5 text-white" />
+                                                                        </div>
+                                                                        Updated Cover Letter
+                                                                    </h3>
+                                                                    <div className="flex items-center gap-2">
+                                                                        <button onClick={handleCopyCoverLetter} className="flex items-center gap-2 px-4 py-2 bg-white border border-emerald-300 text-emerald-700 rounded-lg font-semibold hover:bg-emerald-50 transition-all shadow-sm text-sm">
+                                                                            {copySuccess === 'coverLetter' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                                                                            {copySuccess === 'coverLetter' ? 'Copied!' : 'Copy'}
+                                                                        </button>
+                                                                        <button onClick={handleDownloadCoverLetter} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-green-500 text-white rounded-lg font-semibold hover:from-emerald-600 hover:to-green-600 transition-all shadow-md text-sm">
+                                                                            <Download className="w-4 h-4" />Download
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="bg-white p-6 rounded-xl border border-emerald-100 shadow-sm">{formatContent(parsed.coverLetterUpdated)}</div>
+                                                            </div>
+                                                        )}
+                                                    </>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </main>
+
+                    <footer className="bg-gradient-to-r from-slate-800 via-slate-900 to-slate-800 mt-16">
+                        <div className="max-w-6xl mx-auto px-4 py-10 text-center">
+                            <div className="flex items-center justify-center gap-3 mb-4">
+                                <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg">
+                                    <Sparkles className="w-5 h-5 text-white" />
+                                </div>
+                                <span className="text-white font-bold text-lg">Resume AI Pro</span>
+                            </div>
+                            <p className="text-slate-400">Powered by Claude AI</p>
+                        </div>
+                    </footer>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<ResumeReviewApp />);
+    </script>
 </body>
 </html>
