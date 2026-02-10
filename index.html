@@ -4,13 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resume AI Pro - Free AI Resume & Cover Letter Optimization</title>
-    <meta name="description" content="Free AI-powered resume and cover letter optimization. Get ATS-compatible formatting, keyword alignment, and professional rewriting.">
-    <meta name="keywords" content="resume, cover letter, AI, optimization, ATS, job application, career, free">
+    <meta name="description" content="AI-powered resume and cover letter optimization. Get ATS-compatible formatting, keyword alignment, and professional rewriting for technology jobs.">
+    <meta name="keywords" content="resume, cover letter, AI, optimization, ATS, job application, career">
+    <meta name="author" content="Resume AI Pro">
+
+        <!-- Open Graph / Social Media -->
+    <meta property="og:title" content="Resume AI Pro - AI Resume & Cover Letter Optimization">
+    <meta property="og:description" content="Get professionally optimized resumes and cover letters with AI-powered analysis and ATS-compatible formatting.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://resumeaipro.io">
+
+        <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>">
+
+        <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+        <!-- React -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+        <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    
+    <!-- Mammoth.js for DOCX parsing -->
     <script src="https://unpkg.com/mammoth@1.6.0/mammoth.browser.min.js"></script>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; }
@@ -126,7 +144,7 @@
                     let b64 = '';
                     for (let i = 0; i < u8.length; i++) b64 += String.fromCharCode(u8[i]);
                     b64 = btoa(b64);
-                    const res = await fetch('https://api.anthropic.com/v1/messages', {
+                    const res = await fetch(`${BACKEND_API_URL}/extract-pdf`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -356,10 +374,14 @@ ${resume ? `RESUME:\n${resume}\n\n` : ''}${coverLetter ? `COVER LETTER:\n${cover
                                 </div>
                                 <div>
                                     <h1 className="text-2xl md:text-3xl font-bold text-slate-800">Resume AI Pro</h1>
-                                    <p className="text-slate-500 text-sm font-medium">Free AI Resume & Cover Letter Optimization</p>
+                                    <p className="text-slate-500 text-sm font-medium">AI Resume & Cover Letter Optimization for Technology Jobs</p>
                                 </div>
                             </div>
-                            <p className="text-slate-600 mt-3 text-base leading-relaxed">AI-powered optimization for keyword alignment, ATS compatibility, and clarity.</p>
+                            <p className="text-slate-600 mt-3 text-base leading-relaxed">Resume AI Pro analyzes your resume, cover letter, and job description to optimize keyword alignment, ATS compatibility, and clarity for competitive technology hiring processes.</p>
+                            <p className="text-slate-500 text-sm mt-1 flex items-center gap-2">
+            <span className="w-1.5 h-1.5 bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 rounded-full"></span>
+            Built for professionals across software engineering, product management, data, UX, IT, and other technology roles.
+                            </p>
                         </div>
                     </header>
 
